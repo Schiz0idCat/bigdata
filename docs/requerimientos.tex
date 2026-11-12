@@ -1,0 +1,568 @@
+% Requerimientos del Proyecto Final -- Big Data y Machine Learning con Spark ML
+% Transcripción LaTeX del PDF original (docs/requerimientos.pdf).
+%
+% Compilar con pdfLaTeX:
+%   latexmk -pdf requerimientos.tex
+%
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}          % TeX Gyre Pagella (serif)
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{needspace}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Proyecto Final -- Big Data y Machine Learning con Spark ML},pdfsubject={Curso de Big Data}}
+
+% ---------- Tipografía ----------
+\renewcommand{\ttdefault}{lmtt}  % monoespaciada Latin Modern
+
+% ---------- Párrafos ----------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em plus 0.15em minus 0.1em}
+
+% ---------- Títulos ----------
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection.}{0.9em}{}
+\titlespacing*{\section}{0pt}{1.7ex plus 0.6ex minus 0.2ex}{0.8ex}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection.}{0.9em}{}
+\titlespacing*{\subsection}{0pt}{1.8ex plus 0.5ex minus 0.2ex}{0.65ex}
+
+% ---------- Listas ----------
+\newcommand{\sqbullet}{\raisebox{0.25ex}{\rule{0.46ex}{0.46ex}}}
+\setlist[itemize]{label=\sqbullet, leftmargin=1.9em, itemsep=0.25em,
+                  topsep=0.6em, parsep=0pt, partopsep=0pt}
+\setlist[enumerate]{leftmargin=2.1em, itemsep=0.25em, topsep=0.6em,
+                    parsep=0pt, partopsep=0pt, label=\arabic*.}
+
+% ---------- Cajas para código y diagramas ----------
+\newtcblisting{codebox}{
+  listing only, width=\linewidth,
+  colback=black!4, colframe=black, boxrule=0.4pt, sharp corners,
+  left=6pt, right=6pt, top=5pt, bottom=5pt, boxsep=0pt,
+  fontupper=\ttfamily\small, fontlower=\ttfamily\small
+}
+\newtcblisting{diagram}{
+  listing only, width=\linewidth,
+  colback=black!4, colframe=black, boxrule=0.4pt, sharp corners,
+  left=4pt, right=4pt, top=4pt, bottom=4pt, boxsep=0pt,
+  fontupper=\ttfamily\fontsize{7.5}{9}\selectfont,
+  fontlower=\ttfamily\fontsize{7.5}{9}\selectfont
+}
+
+\begin{document}
+
+% ======================= Portada =======================
+\begin{center}
+  \vspace*{0.9cm}
+  {\LARGE\bfseries Proyecto Final -- Big Data y Machine Learning con Spark ML\par}
+  \vspace{1.1em}
+  {\large Curso de Big Data\par}
+\end{center}
+
+\vspace{0.5em}
+
+% ======================= 1 =======================
+\section{Propósito del proyecto}
+
+El proyecto final tiene como objetivo resolver un problema real de
+\textbf{detección, clasificación, predicción, regresión o segmentación} utilizando
+\textbf{Spark ML} como capa principal de Machine Learning.
+
+El foco estará en diseñar y justificar una solución completa: desde la obtención y
+preparación de los datos hasta el entrenamiento, evaluación, interpretación y análisis de
+escalabilidad del modelo.
+
+Cada grupo deberá construir una arquitectura donde los datos sean obtenidos mediante
+\textbf{una única vía principal de alimentación}, escogida y justificada entre:
+
+\begin{enumerate}[label=\Alph*., leftmargin=2.3em]
+  \item \textbf{Spark}: lectura y procesamiento directamente mediante Spark.
+  \item \textbf{Dask}: preparación inicial con Dask, persistencia del resultado y posterior
+        lectura desde Spark.
+  \item \textbf{Kafka}: recepción de eventos mediante Kafka y procesamiento con Spark
+        Structured Streaming.
+\end{enumerate}
+
+\textbf{Importante:} Spark ML opera sobre DataFrames de Spark. Por tanto, Dask o Kafka
+pueden constituir la capa de ingesta o preparación, pero los datos deberán llegar
+finalmente a un DataFrame de Spark antes de entrenar o aplicar el modelo.
+
+% ======================= 2 =======================
+\section{Continuidad con las tareas anteriores}
+
+El proyecto debe recuperar elementos desarrollados durante el curso y demostrar que el
+grupo comprende cómo se conectan las distintas capas de una arquitectura Big Data.
+
+Cuando sea posible, se recomienda continuar con el mismo dominio o conjunto de datos
+utilizado en las tareas anteriores. Si el grupo cambia de dominio o dataset, deberá
+justificar la decisión.
+
+Cada grupo deberá incluir una breve sección denominada \textbf{``Análisis de datos a
+problema de Machine Learning''}, identificando al menos cuatro elementos previamente
+trabajados y su transformación en el proyecto.
+
+Ejemplos:
+
+\vspace{0.25em}
+\noindent
+\small
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.37\textwidth}
+                                   >{\raggedright\arraybackslash}X@{}}
+  \toprule
+  \textbf{Elemento previo} & \textbf{Transformación en el proyecto} \\
+  \midrule
+  Pregunta analítica & Variable objetivo o decisión que se desea predecir \\
+  EDA y distribuciones & Selección y transformación de variables \\
+  Outliers o patrones detectados & Señales potenciales para detección o clasificación \\
+  Agregaciones o ventanas & Características de entrada para el modelo \\
+  Particionamiento de datos & Paralelismo y escalabilidad del entrenamiento \\
+  Streaming desde Kafka & Inferencia continua o procesamiento de eventos \\
+  \bottomrule
+\end{tabularx}
+\vspace{0.2em}
+
+% ======================= 3 =======================
+\section{Tipos de problemas permitidos}
+
+El problema debe tener una finalidad verificable. Se permiten, entre otros:
+
+\begin{itemize}
+  \item clasificación binaria;
+  \item clasificación multiclase;
+  \item detección de eventos o condiciones;
+  \item regresión o predicción de una variable numérica;
+  \item predicción basada en variables temporales construidas mediante ventanas o rezagos;
+  \item segmentación o clustering, siempre que exista una pregunta concreta que justifique
+        la agrupación;
+  \item detección de comportamientos atípicos mediante una estrategia justificable
+        implementable con las herramientas utilizadas.
+\end{itemize}
+
+No se considerará suficiente ejecutar un modelo únicamente porque está disponible en
+Spark ML. El grupo deberá justificar por qué el problema requiere Machine Learning, qué
+representa la variable objetivo y cuál sería la utilidad de la predicción o detección
+obtenida.
+
+% ======================= 4 =======================
+\section{Arquitectura}
+
+El informe deberá incluir un diagrama de la arquitectura utilizada.
+
+\needspace{18\baselineskip}
+Ejemplos válidos:
+
+\noindent
+\begin{minipage}[t]{0.322\textwidth}\vspace{0pt}
+\begin{diagram}
+Fuente de datos
+      |
+      v
+    Spark
+      |
+      v
+Feature Engineering
+      |
+      v
+   Spark ML
+      |
+      v
+Prediccion / Evaluacion
+\end{diagram}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.322\textwidth}\vspace{0pt}
+\begin{diagram}
+Fuente de datos
+      |
+      v
+     Dask
+      |
+      v
+Parquet / almacenamiento
+      |
+      v
+    Spark
+      |
+      v
+   Spark ML
+\end{diagram}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.322\textwidth}\vspace{0pt}
+\begin{diagram}
+Producer
+  |
+  v
+Kafka
+  |
+  v
+Spark Structured Streaming
+  |
+  v
+Transformacion de datos
+  |
+  v
+Modelo Spark ML
+  |
+  v
+Predicciones
+\end{diagram}
+\end{minipage}
+
+\medskip
+
+Cada grupo deberá escoger \textbf{una} arquitectura principal y justificarla. No se evalúa
+positivamente incorporar Dask, Kafka y Spark simultáneamente si no existe una necesidad
+real.
+
+% ======================= 5 =======================
+\section{Actividades}
+
+\subsection{1. Definición del problema}
+
+Definir claramente:
+
+\begin{itemize}
+  \item el problema que se busca resolver;
+  \item la unidad de análisis;
+  \item la variable objetivo, si corresponde;
+  \item qué significa una predicción correcta;
+  \item qué decisión o conocimiento aporta el modelo;
+  \item las limitaciones principales del problema.
+\end{itemize}
+
+La formulación debe estar expresada primero como un problema del dominio y posteriormente
+como un problema de Machine Learning.
+
+\subsection{2. Ingesta y preparación}
+
+Implementar una única vía principal de alimentación: Spark, Dask o Kafka.
+
+El grupo deberá describir:
+
+\begin{itemize}
+  \item fuente y volumen de datos;
+  \item esquema;
+  \item variables utilizadas;
+  \item tratamiento de nulos;
+  \item duplicados;
+  \item categorías;
+  \item posibles valores anómalos;
+  \item transformación necesaria antes del entrenamiento.
+\end{itemize}
+
+Si se utiliza Kafka, se deberá explicar además:
+
+\begin{itemize}
+  \item qué representa cada evento;
+  \item topic utilizado;
+  \item key;
+  \item número de particiones;
+  \item relación entre la tasa de llegada y la capacidad de procesamiento.
+\end{itemize}
+
+\subsection{3. Ingeniería de características}
+
+Construir las variables requeridas por el modelo utilizando Spark.
+
+Dependiendo del problema, pueden utilizarse:
+
+\begin{itemize}
+  \item variables numéricas;
+  \item codificación de variables categóricas;
+  \item agregaciones;
+  \item variables derivadas;
+  \item características obtenidas mediante ventanas;
+  \item rezagos temporales;
+  \item conteos o tasas;
+  \item escalamiento, cuando corresponda.
+\end{itemize}
+
+Se debe justificar cada transformación. No se evaluará positivamente incorporar variables sin
+explicar su relación con el problema.
+
+\subsection{4. Pipeline de Spark ML}
+
+El procesamiento deberá organizarse mediante los componentes de \texttt{pyspark.ml}.
+
+\needspace{17\baselineskip}
+Ejemplo de constructor mínimo:
+
+\begin{codebox}
+from pyspark.ml import Pipeline
+from pyspark.ml.feature import VectorAssembler
+
+assembler = VectorAssembler(
+    inputCols=["x1", "x2", "x3"],
+    outputCol="features"
+)
+
+pipeline = Pipeline(stages=[
+    assembler,
+    modelo
+])
+\end{codebox}
+
+Este ejemplo entrega solamente la estructura. Cada grupo deberá seleccionar sus
+transformaciones, variables y modelo de acuerdo con su problema.
+
+\subsection{5. Baseline obligatorio}
+
+Antes de evaluar modelos más complejos, el grupo deberá definir un \textbf{baseline}.
+
+Ejemplos:
+
+\begin{itemize}
+  \item predecir siempre la clase mayoritaria;
+  \item utilizar una regla simple del dominio;
+  \item utilizar la media o mediana en un problema de regresión;
+  \item entrenar un modelo lineal o simple como referencia.
+\end{itemize}
+
+El objetivo es demostrar que el modelo propuesto mejora una alternativa razonable y no
+solamente que obtiene una determinada métrica.
+
+\subsection{6. Modelos}
+
+Evaluar al menos dos alternativas de modelado disponibles en Spark ML cuando el tipo de
+problema lo permita.
+
+Ejemplos:
+
+\begin{itemize}
+  \item Logistic Regression;
+  \item Decision Tree;
+  \item Random Forest;
+  \item Gradient-Boosted Trees;
+  \item Linear Regression;
+  \item Generalized Linear Regression;
+  \item K-Means.
+\end{itemize}
+
+La selección debe estar justificada. No se requiere utilizar todos los algoritmos
+disponibles.
+
+\subsection{7. Separación de entrenamiento y evaluación}
+
+Definir una estrategia de separación de datos consistente con el problema.
+
+Se deberá evitar explícitamente el data leakage.
+
+Si los datos poseen una componente temporal relevante, se espera una separación temporal en
+lugar de una división aleatoria cuando corresponda.
+
+\subsection{8. Evaluación}
+
+Las métricas deben corresponder al problema.
+
+\textbf{Clasificación:}
+
+\begin{itemize}
+  \item precision;
+  \item recall;
+  \item F1-score;
+  \item matriz de confusión;
+  \item ROC-AUC y/o PR-AUC cuando corresponda.
+\end{itemize}
+
+No se deberá utilizar Accuracy como única métrica cuando exista desbalance de clases.
+
+\textbf{Regresión:}
+
+\begin{itemize}
+  \item MAE;
+  \item RMSE;
+  \item R\textsuperscript{2};
+  \item análisis de errores.
+\end{itemize}
+
+\textbf{Clustering:}
+
+\begin{itemize}
+  \item Silhouette;
+  \item caracterización de los grupos;
+  \item interpretación de su utilidad.
+\end{itemize}
+
+Cada resultado debe seguir la lógica:
+
+\begin{center}
+  \texttt{\textbf{pregunta $\rightarrow$ experimento $\rightarrow$ resultado $\rightarrow$ interpretación}}
+\end{center}
+
+\subsection{9. Ajuste del modelo (OPCIONAL)}
+
+Realizar al menos una estrategia de ajuste o comparación de hiperparámetros utilizando
+herramientas de Spark ML, por ejemplo:
+
+\begin{itemize}
+  \item TrainValidationSplit;
+  \item CrossValidator;
+  \item ParamGridBuilder.
+\end{itemize}
+
+El objetivo no es realizar una búsqueda exhaustiva, sino demostrar que el grupo entiende el
+efecto de los parámetros sobre el comportamiento del modelo.
+
+\subsection{10. Escalabilidad}
+
+Realizar un experimento que permita observar el comportamiento del pipeline al modificar al
+menos una de las siguientes variables:
+
+\begin{itemize}
+  \item volumen de datos;
+  \item número de particiones;
+  \item recursos disponibles;
+  \item cantidad de variables;
+  \item tasa de eventos, cuando se utilice Kafka.
+\end{itemize}
+
+Se deberá registrar el tiempo de ejecución y discutir si el cuello de botella se encuentra
+en:
+
+\begin{itemize}
+  \item lectura;
+  \item preparación;
+  \item shuffle;
+  \item feature engineering;
+  \item entrenamiento;
+  \item inferencia;
+  \item almacenamiento;
+  \item Kafka;
+  \item número de particiones;
+  \item capacidad del consumidor.
+\end{itemize}
+
+\subsection{11. Interpretación del modelo (OPCIONAL)}
+
+El grupo deberá explicar qué aprendió el modelo y qué variables parecen relevantes,
+utilizando las herramientas disponibles para el algoritmo seleccionado.
+
+Cuando el algoritmo permita obtener importancia de variables, coeficientes u otra
+información interpretable, esta deberá ser analizada.
+
+No basta con reportar una métrica final.
+
+\subsection{12. Si se utiliza Kafka}
+
+Cuando la arquitectura seleccionada utilice Kafka, se deberá distinguir entre:
+
+\begin{itemize}
+  \item \textbf{entrenamiento}: realizado sobre un DataFrame de Spark con un conjunto de
+        datos definido;
+  \item \textbf{inferencia}: aplicación del modelo entrenado sobre los eventos recibidos.
+\end{itemize}
+
+Una arquitectura esperada puede ser:
+
+\noindent
+\begin{diagram}
+Datos historicos
+     |
+     v
+Spark -> Spark ML -> modelo entrenado
+                       |
+                       v
+Kafka -> Structured Streaming -> transformacion -> prediccion
+\end{diagram}
+
+\medskip
+
+El grupo deberá explicar cómo se administran los offsets, el checkpointing y qué ocurriría
+si el procesamiento se interrumpe temporalmente.
+
+% ======================= 6 =======================
+\section{Preguntas mínimas que debe responder el proyecto}
+
+Al finalizar, el grupo deberá ser capaz de responder:
+
+\begin{enumerate}[itemsep=0.55em]
+  \item ¿Qué problema real intenta resolver?
+  \item ¿Por qué es un problema de Machine Learning?
+  \item ¿Cuál es la variable objetivo?
+  \item ¿Qué representa cada observación?
+  \item ¿Qué variables utiliza el modelo?
+  \item ¿Cómo se construyeron esas variables?
+  \item ¿Cuál es el baseline?
+  \item ¿Qué modelos se compararon?
+  \item ¿Qué métrica es la más importante y por qué?
+  \item ¿Existe desbalance, leakage o dependencia temporal?
+  \item ¿Cuál fue el principal cuello de botella?
+  \item ¿Cómo cambia el rendimiento al aumentar la escala?
+  \item ¿Qué limitaciones tiene la solución?
+  \item ¿Qué decisión podría tomarse utilizando el resultado del modelo?
+\end{enumerate}
+
+% ======================= 7 =======================
+\section{Entregables}
+
+\begin{enumerate}[itemsep=0.55em]
+  \item \textbf{Notebook ejecutable}, con todas las celdas ejecutadas y sus resultados
+        visibles. Con problema, metodología, resultados, evaluación, escalabilidad y
+        conclusiones.
+  \item Diagrama de arquitectura.
+  \item Presentación y defensa.
+  \item Código o archivos auxiliares necesarios para reproducir la solución.
+  \item Declaración de uso de herramientas de Inteligencia Artificial.
+\end{enumerate}
+
+% ======================= 8 =======================
+\section{Criterios de evaluación}
+
+\noindent
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{X}
+  \toprule
+  \textbf{Criterio} \\
+  \midrule
+  Formulación y relevancia del problema \\
+  Diseño de arquitectura e ingesta \\
+  Preparación e ingeniería de características \\
+  Uso correcto de Spark ML y Pipeline \\
+  Baseline y comparación de modelos \\
+  Evaluación y selección de métricas \\
+  Análisis de escalabilidad y cuellos de botella \\
+  Interpretación y discusión de resultados \\
+  Reproducibilidad y calidad de la defensa \\
+  \bottomrule
+\end{tabularx}
+
+% ======================= 9 =======================
+\section{Restricciones}
+
+\begin{itemize}
+  \item El modelo principal debe implementarse utilizando \textbf{Spark ML}.
+  \item No se acepta reemplazar Spark ML por scikit-learn como núcleo del proyecto.
+  \item El proyecto debe utilizar una sola vía principal de ingesta: Spark, Dask o Kafka.
+  \item La elección de la arquitectura debe estar justificada por el problema y no por
+        acumular tecnologías.
+  \item El notebook debe poder ejecutarse de principio a fin.
+  \item Las conclusiones deben estar respaldadas por resultados medibles.
+  \item Toda herramienta de IA utilizada debe ser declarada junto con la forma en que se
+        verificó su resultado.
+\end{itemize}
+
+% ======================= 10 =======================
+\section{Foco de la defensa}
+
+La defensa no se centrará en recordar sintaxis. El grupo deberá justificar decisiones como:
+
+\begin{itemize}
+  \item por qué escogió determinada arquitectura;
+  \item por qué una variable puede o no utilizarse como feature;
+  \item por qué una métrica es apropiada;
+  \item cómo detectó un posible caso de leakage;
+  \item por qué un modelo supera al baseline;
+  \item qué ocurre al aumentar el volumen de datos;
+  \item dónde se encuentra el cuello de botella;
+  \item qué modificaría para llevar la solución a un entorno productivo.
+\end{itemize}
+
+\end{document}

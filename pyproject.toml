@@ -8,4 +8,5 @@ dependencies = []
 dev = [
     "ipykernel>=7.4.0",
     "jupyterlab>=4.6.6",
+    "kagglehub>=1.0.3",
 ]

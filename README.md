@@ -3,7 +3,7 @@
 (crea `data/` si no existe; no descarga nada si el archivo ya está):
 
 ```bash
-uv run python src/download_data.py
+uv run python src/data.py
 ```
 
 # Alcance
